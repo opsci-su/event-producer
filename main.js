@@ -2,12 +2,13 @@ import { Kafka } from 'kafkajs';
 import fs from 'fs';
 import csv from 'csv-parser';
 
-const BROKER_1 = process.env.BROKER_1 || 'localhost:9092';
-const BROKER_2 = process.env.BROKER_2 || 'localhost:9092';
-const BROKER_3 = process.env.BROKER_3 || 'localhost:9092';
+const BROKER_1 = process.env.BROKER_1 || 'localhost:9093';
+const BROKER_2 = process.env.BROKER_2 || 'localhost:9093';
+const BROKER_3 = process.env.BROKER_3 || 'localhost:9093';
 const TOPIC = process.env.TOPIC || 'event';
 const FILE_NAME = process.env.FILE_NAME || "events.csv";
 const ERROR_TOPIC = process.env.ERROR_TOPIC || 'errors';
+const SEPARATOR = ';';
 
 const log = (...str) => console.log(`${new Date().toUTCString()}: `, ...str);
 
@@ -44,7 +45,7 @@ async function main() {
     const sendPromises = [];
   
     const fileStream = fs.createReadStream(FILE_NAME)
-      .pipe(csv())
+      .pipe(csv({ separator: SEPARATOR }))
       .on('data', async (row) => {
         const product = {
           value: row['value'],
@@ -53,6 +54,7 @@ async function main() {
   
         const message = JSON.stringify(product);
         const key = '1';
+        log('product: ', product);
         log('Sending: ', message);
         const sendPromise = sendToKafka(TOPIC, key, message);
         sendPromises.push(sendPromise);
