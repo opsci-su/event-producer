@@ -23,4 +23,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/even-producer:${{ env.TAG }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/event-producer:${{ env.TAG }}
